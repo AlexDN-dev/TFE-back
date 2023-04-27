@@ -31,8 +31,11 @@ const getAllUsers = async (req, res, next) => {
     }
 }
 const getData = async (req, res, next) => {
-    const userId = req.body
+    const data = req.body
+    const userId = Object.keys(data)[0]
     try {
+        const response = await usersModels.getUserById(userId)
+        return res.status(200).json({data: response})
     }catch(err){
         return next(err)
     }

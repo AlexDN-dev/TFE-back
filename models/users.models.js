@@ -11,12 +11,20 @@ const pool = new Pool({
 const getAllUsers = () => {
     return pool.query('SELECT * from users')
 }
+const getUserById = async (id) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        return rows[0];
+    } catch (err) {
+        throw new Error(err);
+    }
+}
 const getOneUserByMail = async (mail) => {
     try {
         const res = await pool.query('SELECT * from users WHERE mail = $1', [mail]);
         const user = res.rows[0];
         if (!user) {
-            return null; // Aucun utilisateur n'a été trouvé
+            return null;
         }
         const formattedUser = {
             id: user.id,
@@ -40,5 +48,5 @@ const hasAlreadyAnAccount = (mail) => {
 }
 
 module.exports = {
-    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount
+    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById
 }
