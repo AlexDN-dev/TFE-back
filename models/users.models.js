@@ -46,7 +46,12 @@ const hasAlreadyAnAccount = (mail) => {
     const value = [mail]
     return pool.query('SELECT id from users WHERE mail = $1', value)
 }
+const changePassword = (password, id) => {
+    const values = [password, id]
+    console.log(values)
+    pool.query('UPDATE users SET password = $1 WHERE id = $2', values)
+}
 
 module.exports = {
-    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById
+    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword
 }
