@@ -5,7 +5,7 @@ const checkToken = (req, res, next) => {
     try {
         jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
             if (err) {
-                return res.json({message: "false"})
+                return res.json({message: "token is expired."})
             } else {
                 return res.json({token: decodedToken})
             }

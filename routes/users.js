@@ -11,5 +11,8 @@ router.post('/data', usersController.getData)
 router.post('/register', usersController.createUsers)
 router.post('/addPicture', usersController.addPicture)
 router.post('/changePassword', usersController.changePassword)
+router.post('/changePhoneNumber', usersController.changePhoneNumber)
+router.post('/changeCoords', usersController.changeCoords)
+router.post('/deleteAccount', usersController.deleteAccount)
 
 module.exports = router;

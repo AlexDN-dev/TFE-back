@@ -39,6 +39,38 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage }).single('file');
+const checkPhoneNumber = (phoneNumber) => {
+    const regexes = {
+        france: /^(0|\+33)[1-9](\d{2}){4}$/,
+        belgique: /^(0|\+32)[1-9]\d{7}$/,
+        angleterre: /^(0|\+44)7\d{9}$/,
+        luxembourg: /^(0|\+352)\d{8}$/,
+        allemagne: /^(0|\+49)[1-9]\d{10}$/,
+        paysBas: /^(0|\+31)6[\d-]{8,10}$/
+    };
+
+    for (let country in regexes) {
+        if (regexes[country].test(phoneNumber)) {
+            return true;
+        }
+    }
+    return false;
+};
+const isValidPostalCode = (postalCode) => {
+    const frRegex = /^(F-)?((2[A|B])|[0-9]{2})[0-9]{3}$/;
+    const beRegex = /^[1-9]{1}[0-9]{3}$/;
+    const gbRegex = /^([A-PR-UWYZ][0-9][A-HJKPSTUW])\s?([0-9][ABD-HJLNP-UW-Z]{2})$/;
+    const luRegex = /^(L\s*(-|—)?\s*?[\d]{4})$/;
+    const deRegex = /^(?!01000|99999)(0[1-9]\d{3}|[1-9]\d{4})$/;
+    const nlRegex = /^[1-9][0-9]{3}\s?[a-zA-Z]{2}$/;
+    const regexList = [frRegex, beRegex, gbRegex, luRegex, deRegex, nlRegex];
+    for (let i = 0; i < regexList.length; i++) {
+        if (regexList[i].test(postalCode)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 const getAllUsers = async (req, res, next) => {
     try {
@@ -66,25 +98,29 @@ const userConnexion = async (req, res, next) => {
             (usersModels.getOneUserByMail(mail))
                 .then(async result => {
                     if(result !== null){
-                    if(await verifyPassword(result.password, password)){
-                        const payload = {
-                            id: result.id,
-                            permission: result.permission
+                        if(result.profilLevel !== -1){
+                            if(await verifyPassword(result.password, password)){
+                                const payload = {
+                                    id: result.id,
+                                    permission: result.permission
+                                }
+                                const token = await new Promise((resolve, reject) => {
+                                    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => {
+                                        if (err) reject(err)
+                                        else resolve(token)
+                                    })
+                                })
+                                console.log("Token : " + token)
+                                return res.status(200).json({message: "Connexion réussite !", token: token})
+                            }else {
+                                return res.status(401).json({error: "Le mail ou/et le mot de passe est incorrecte."})
+                            }
+                        }else {
+                            return res.status(401).json({error: "Ce compte n'est plus disponible."})
                         }
-                        const token = await new Promise((resolve, reject) => {
-                            jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => {
-                                if (err) reject(err)
-                                else resolve(token)
-                            })
-                        })
-                        console.log("Token : " + token)
-                        return res.status(200).json({message: "Connexion réussite !", token: token})
                     }else {
-                        return res.status(401).json({error: "Le mail ou/et le mot de passe est incorrecte."})
+                        return res.status(401).json({error: "Le mail n'existe pas !"})
                     }
-                }else {
-                    return res.status(401).json({error: "Le mail n'existe pas !"})
-                }
             })
 
         }else {
@@ -189,8 +225,46 @@ const changePassword = async (req, res, next) => {
         return res.status(400).json({error: err})
     }
 }
+const changePhoneNumber = async (req, res, next) => {
+    try {
+        const userData = req.body
+        const {phone, id} = userData
+        if(checkPhoneNumber(phone)){
+            usersModels.changePhoneNumber(phone, id)
+            return res.status(200).json({message: "Numéro de téléphone modifié avec succès !"})
+        }else {
+            return res.status(400).json({error: "Merci de rentrer un numéro de téléphone correct."})
+        }
+    }catch(err) {
+        return res.status(400).json({err: err})
+    }
+}
+const changeCoords = async(req, res) => {
+    try {
+        const userData = req.body
+        const {city, postalCode, id} = userData
+        if(isValidPostalCode(postalCode)){
+            usersModels.changeCoords(city, postalCode, id)
+            return res.status(200).json({message: "Coordonnées modifiées avec succès !"})
+        }else {
+            return res.status(400).json({error: "Merci de rentrée des coordonnées valides."})
+        }
+    }catch(err){
+        return res.status(400).json({error: err})
+    }
+}
+const deleteAccount = async(req, res) => {
+    try {
+        const userData = req.body
+        const id = Object.keys(userData)[0]
+        usersModels.deleteAccount(id)
+        return res.status(200).json({message: "Votre compte à bien été supprimé."})
+    }catch(err) {
+        return res.status(400).json({error: err})
+    }
+}
 module.exports = {
     getAllUsers,
     createUsers, userConnexion, getData, addPicture,
-    changePassword
+    changePassword, changePhoneNumber, changeCoords, deleteAccount
 }

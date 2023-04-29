@@ -30,7 +30,8 @@ const getOneUserByMail = async (mail) => {
             id: user.id,
             mail: user.mail,
             password: user.password,
-            permission: user.permission
+            permission: user.permission,
+            profilLevel: user.profilLevel
         };
         return formattedUser;
     } catch (err) {
@@ -48,10 +49,20 @@ const hasAlreadyAnAccount = (mail) => {
 }
 const changePassword = (password, id) => {
     const values = [password, id]
-    console.log(values)
     pool.query('UPDATE users SET password = $1 WHERE id = $2', values)
 }
-
+const changePhoneNumber = (number, id) => {
+    const values = [number, id]
+    pool.query('UPDATE users SET "phoneNumber" = $1 WHERE id = $2', values)
+}
+const changeCoords = (city, postalCode, id) => {
+    const values = [city, postalCode, id]
+    pool.query('UPDATE users SET city = $1, "postalCode" = $2 WHERE  id = $3', values)
+}
+const deleteAccount = (id) => {
+    const values = [-1, id]
+    pool.query('UPDATE users SET "profilLevel" = $1 WHERE id = $2', values)
+}
 module.exports = {
-    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword
+    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount
 }
