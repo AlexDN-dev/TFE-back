@@ -33,7 +33,6 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         const ext = file.originalname.split('.').pop();
         const id = req.body.id
-        console.log("ID : " + id)
         cb(null, "Image-" + id + '.' + "png");
     }
 });
@@ -110,7 +109,6 @@ const userConnexion = async (req, res, next) => {
                                         else resolve(token)
                                     })
                                 })
-                                console.log("Token : " + token)
                                 return res.status(200).json({message: "Connexion réussite !", token: token})
                             }else {
                                 return res.status(401).json({error: "Le mail ou/et le mot de passe est incorrecte."})

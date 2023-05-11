@@ -11,6 +11,8 @@ const corsOptions = {
 
 const usersRouter = require("./routes/users")
 const tokenRouter = require("./routes/token")
+const annonceRouter = require('./routes/annonce')
+const optionsRouter = require('./routes/options')
 const bodyParser = require("body-parser");
 
 app.use(cors(corsOptions));
@@ -22,6 +24,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/users', usersRouter)
 app.use('/token', tokenRouter)
+app.use('/annonce', annonceRouter)
+app.use('/options', optionsRouter)
+
+//récupérer les images via l'ID du dossier
+app.use('/getImages', express.static(path.join(__dirname, 'annonce'), {
+  index: false,
+  setHeaders: (res, filePath) => {
+    const resolvedPath = path.resolve(filePath)
+    res.setHeader('Content-Disposition', `inline; filename="${path.basename(resolvedPath)}"`);
+  }
+}))
 
 // fallback route
 app.use((req, res, next) => {

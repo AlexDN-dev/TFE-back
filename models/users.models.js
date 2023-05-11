@@ -63,6 +63,9 @@ const deleteAccount = (id) => {
     const values = [-1, id]
     pool.query('UPDATE users SET "profilLevel" = $1 WHERE id = $2', values)
 }
+const getProfileLevel = async (id) => {
+    return await pool.query('SELECT "profilLevel" FROM users WHERE id = $1', [id])
+}
 module.exports = {
-    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount
+    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount, getProfileLevel
 }
