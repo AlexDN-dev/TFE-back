@@ -18,6 +18,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post('/create', upload.array('images', 15), annonceController.createAnnonce);
+router.post('/modify', upload.array('images', 15), annonceController.modifyAnnonce);
 router.get('/', annonceController.getAnnonceFromSearch)
+router.post('/', annonceController.getAnnonceById)
+router.post('/getAnnonce', annonceController.getAnnonceFromIdUser)
+router.get('/getImages', annonceController.getImages)
 
 module.exports = router;

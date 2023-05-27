@@ -19,6 +19,13 @@ const getUserById = async (id) => {
         throw new Error(err);
     }
 }
+const getPrimaryDataUserById = async (id) => {
+    try {
+        return await pool.query('SELECT id, "firstName", "lastName", mail, "phoneNumber", city FROM users WHERE id = $1', [id])
+    }catch(err) {
+        return err
+    }
+}
 const getOneUserByMail = async (mail) => {
     try {
         const res = await pool.query('SELECT * from users WHERE mail = $1', [mail]);
@@ -66,6 +73,9 @@ const deleteAccount = (id) => {
 const getProfileLevel = async (id) => {
     return await pool.query('SELECT "profilLevel" FROM users WHERE id = $1', [id])
 }
+const checkAnnonce = async (idUser, idAnnonce) => {
+    return await pool.query('SELECT * FROM annonce WHERE id = $1 and id_owner = $2', [idAnnonce, idUser])
+}
 module.exports = {
-    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount, getProfileLevel
+    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount, getProfileLevel, getPrimaryDataUserById, checkAnnonce
 }

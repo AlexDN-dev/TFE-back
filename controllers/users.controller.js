@@ -81,7 +81,7 @@ const getAllUsers = async (req, res, next) => {
 }
 const getData = async (req, res, next) => {
     const data = req.body
-    const userId = Object.keys(data)[0]
+    let userId = data.userId
     try {
         const response = await usersModels.getUserById(userId)
         return res.status(200).json({data: response})
@@ -261,8 +261,24 @@ const deleteAccount = async(req, res) => {
         return res.status(400).json({error: err})
     }
 }
+
+const checkAnnonce = async(req, res) => {
+    try {
+        const data = req.body
+        const response = await usersModels.checkAnnonce(data.idUser, data.idAnnonce)
+        console.log(response.rowCount)
+        if(response.rowCount === 1){
+            return res.status(200).json({message: "ok"})
+        }else {
+            return res.status(400).json({message: "not ok"})
+        }
+    }catch(err) {
+        return res.status(400).json({message: "not ok"})
+    }
+}
 module.exports = {
     getAllUsers,
     createUsers, userConnexion, getData, addPicture,
-    changePassword, changePhoneNumber, changeCoords, deleteAccount
+    changePassword, changePhoneNumber, changeCoords, deleteAccount,
+    checkAnnonce
 }
