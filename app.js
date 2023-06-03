@@ -19,6 +19,7 @@ const tokenRouter = require("./routes/token");
 const annonceRouter = require('./routes/annonce');
 const optionsRouter = require('./routes/options');
 const notificationRouter = require("./routes/notifications")
+const supportRouter = require('./routes/support')
 const bodyParser = require("body-parser");
 
 app.use(cors(corsOptions));
@@ -50,6 +51,7 @@ app.use('/token', tokenRouter);
 app.use('/annonce', annonceRouter);
 app.use('/options', optionsRouter);
 app.use('/notifications', notificationRouter)
+app.use('/ticket', supportRouter)
 
 // fallback route
 app.use((req, res, next) => {

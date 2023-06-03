@@ -20,7 +20,6 @@ const sendNotification = async (userId, titre, texte) => {
     try {
         const currentDateTime = new Date();
         const gmtPlus2DateTime = new Date(currentDateTime.getTime() + (2 * 60 * 60 * 1000));
-        console.log(userId + titre + texte + gmtPlus2DateTime);
         await pool.query('INSERT INTO notification (title, message, receiver, date) VALUES ($1, $2, $3, $4)', [titre, texte, userId, gmtPlus2DateTime]);
     } catch (err) {
         console.error(err);
