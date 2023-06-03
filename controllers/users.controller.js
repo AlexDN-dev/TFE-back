@@ -6,6 +6,7 @@ const ftp = require("basic-ftp");
 const usersModels = require("../models/users.models")
 const dayjs = require("dayjs");
 const fs = require("fs");
+const path = require("path");
 
 async function hashPassword(password) {
     try {
@@ -71,6 +72,11 @@ const isValidPostalCode = (postalCode) => {
     return false;
 }
 
+function checkFileExists(filename) {
+    const filePath = path.join('avatar', filename);
+    return fs.existsSync(filePath);
+}
+
 const getAllUsers = async (req, res, next) => {
     try {
         const usersList = await usersModels.getAllUsers()
@@ -82,6 +88,11 @@ const getAllUsers = async (req, res, next) => {
 const getData = async (req, res, next) => {
     const data = req.body
     let userId = data.userId
+    const keys = Object.keys(data);
+    userId = keys[0];
+    if(userId === "userId"){
+        userId = req.body.userId
+    }
     try {
         const response = await usersModels.getUserById(userId)
         return res.status(200).json({data: response})
@@ -157,49 +168,29 @@ const createUsers = async (req, res) => {
     }
 }
 const addPicture = async (req, res, next) => {
-    try {
-        await upload(req, res, async function (err) {
-            if (err) {
-                return res.status(400).json({ message: err.message });
-            }
-
-            const id = req.body.id;
-            const filename = req.file.filename;
-
-            const client = new ftp.Client();
-            client.ftp.verbose = true;
-
-            try {
-                await client.access({
-                    host: "localhost",
-                    user: "ftpuser",
-                    password: "password"
-                });
-
-                // Vérifier si le fichier existe déjà
-                const files = await client.list('/shared/avatar');
-                const existingFile = files.find(file => file.name === filename);
-
-                // Si le fichier existe déjà, le supprimer
-                if (existingFile) {
-                    await client.remove(`/shared/avatar/${existingFile.name}`);
-                }
-
-                // Télécharger la nouvelle image
-                await client.uploadFrom(req.file.path, `/shared/avatar/${filename}`);
-
-                // Retourner le chemin de l'image téléchargée
-                return res.json({ path: `ftp://localhost/shared/avatar/${filename}` });
-            } catch (err) {
-                return res.status(500).json({ message: err.message });
-            } finally {
-                client.close();
-            }
-        });
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
+    const base64Data = req.body.image;
+    const userId = req.body.id.toString() + ".jpg"
+    const uploadPath = path.join(__dirname, '..', 'avatar', userId);
+    const imageData = Buffer.from(base64Data, 'base64');
+    fs.writeFile(uploadPath, imageData, (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Impossible de charger cette image.' });
+        }
+        res.status(200).json({ message: 'Image enregistrée avec succès' });
+    });
 };
+
+const getPicture = async (req, res, next) => {
+    const userId = req.query.userId
+    const fileExists = checkFileExists(userId.toString() + ".jpg");
+    if(fileExists === true){
+        res.status(200).json({message: "http://localhost:3000/getAvatar/" + userId.toString() + ".jpg"})
+    }else {
+        res.status(200).json({message: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"})
+    }
+}
+
 const changePassword = async (req, res, next) => {
     try {
         const userData = req.body
@@ -266,7 +257,6 @@ const checkAnnonce = async(req, res) => {
     try {
         const data = req.body
         const response = await usersModels.checkAnnonce(data.idUser, data.idAnnonce)
-        console.log(response.rowCount)
         if(response.rowCount === 1){
             return res.status(200).json({message: "ok"})
         }else {
@@ -280,5 +270,5 @@ module.exports = {
     getAllUsers,
     createUsers, userConnexion, getData, addPicture,
     changePassword, changePhoneNumber, changeCoords, deleteAccount,
-    checkAnnonce
+    checkAnnonce, getPicture
 }

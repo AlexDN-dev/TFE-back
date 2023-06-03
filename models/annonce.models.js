@@ -57,7 +57,7 @@ const getAnnonceById = async (id) => {
 
 const getAnnonceFromIdUser = async (id) => {
     try {
-        const result = await pool.query('SELECT * FROM annonce WHERE id_owner = $1 ORDER BY id', [id]);
+        const result = await pool.query('SELECT * FROM annonce WHERE id_owner = $1 AND state != -1 ORDER BY id', [id]);
         if (result.rows.length > 0) {
             return result.rows;
         } else {
@@ -69,6 +69,14 @@ const getAnnonceFromIdUser = async (id) => {
     }
 }
 
+const deleteAnnonce = async (id) => {
+    try {
+        pool.query('UPDATE annonce SET state = -1 WHERE id = $1', [id])
+    }catch(err){
+        return err
+    }
+}
+
 module.exports = {
-    createAnnonce, getAnnonceId, canCreateAnnonce, getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, modifyAnnonce
+    createAnnonce, getAnnonceId, canCreateAnnonce, getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, modifyAnnonce, deleteAnnonce
 }

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+
 
 const annonceController = require('../controllers/annonce.controller');
 
@@ -23,5 +22,6 @@ router.get('/', annonceController.getAnnonceFromSearch)
 router.post('/', annonceController.getAnnonceById)
 router.post('/getAnnonce', annonceController.getAnnonceFromIdUser)
 router.get('/getImages', annonceController.getImages)
+router.get('/deleteAnnonce', annonceController.deleteAnnonce)
 
 module.exports = router;

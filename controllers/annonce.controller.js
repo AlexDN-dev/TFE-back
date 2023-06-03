@@ -302,6 +302,16 @@ const getImages = (req, res, next) => {
         });
 }
 
+const deleteAnnonce = async (req, res, next) => {
+    const id = req.query.id
+    try {
+        annonceModel.deleteAnnonce(id)
+        return res.status(200).json({message: "L'annonce à bien été supprimé !"})
+    }catch(err){
+        next(err)
+    }
+}
+
 module.exports = {
-    createAnnonce,getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, getImages, modifyAnnonce
+    createAnnonce,getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, getImages, modifyAnnonce, deleteAnnonce
 };
