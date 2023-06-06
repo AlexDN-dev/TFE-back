@@ -17,10 +17,7 @@ class WebSocketManager {
                     const data = JSON.parse(message);
                     const userId = data.userId;
 
-                    // Associer l'ID de l'utilisateur à la connexion WebSocket
-                    console.log("userConnections avant ajout (connexion) : " + WebSocketManager.userConnections.size)
                     WebSocketManager.userConnections.set(userId, socket);
-                    console.log("userConnections après ajout (connexion) : " + WebSocketManager.userConnections.size)
                 } catch (error) {
                     console.error('Erreur lors du traitement du message:', error);
                 }
@@ -40,7 +37,6 @@ class WebSocketManager {
     }
 
     static async sendNotificationToUser(userId, message) {
-        console.log("Liste des userConnections : " + WebSocketManager.userConnections)
         const socket = WebSocketManager.userConnections.get(userId);
         if (socket) {
             await new Promise((resolve) => {

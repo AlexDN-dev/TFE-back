@@ -76,6 +76,19 @@ const getProfileLevel = async (id) => {
 const checkAnnonce = async (idUser, idAnnonce) => {
     return await pool.query('SELECT * FROM annonce WHERE id = $1 and id_owner = $2', [idAnnonce, idUser])
 }
+const setAdmin = async (id) => {
+    await pool.query('UPDATE users SET permission = 10 WHERE id = $1', [id])
+}
+const setUser = async (id) => {
+    await pool.query('UPDATE users SET permission = 0 WHERE id = $1', [id])
+}
+const banUser = async (id) => {
+    await pool.query('UPDATE users SET "profilLevel" = -1 WHERE id = $1', [id])
+}
+const unbanUser = async (id) => {
+    await pool.query('UPDATE users SET "profilLevel" = 0 WHERE id = $1', [id])
+}
 module.exports = {
-    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount, getProfileLevel, getPrimaryDataUserById, checkAnnonce
+    getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount, getProfileLevel, getPrimaryDataUserById, checkAnnonce,
+    setAdmin, setUser, banUser, unbanUser
 }

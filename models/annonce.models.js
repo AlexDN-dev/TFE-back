@@ -76,7 +76,29 @@ const deleteAnnonce = async (id) => {
         return err
     }
 }
+const getAllAnnonce = async () => {
+    try {
+        return await pool.query('SELECT * FROM annonce')
+    }catch(err){
+        return err
+    }
+}
+const valideAnnonce = async (id) => {
+    try {
+        await pool.query('UPDATE annonce SET state = 1 WHERE id = $1', [id])
+    }catch(err) {
+        return err
+    }
+}
+const hideAnnonce = async (id) => {
+    try {
+        await pool.query('UPDATE annonce SET state = 0 WHERE id = $1', [id])
+    }catch(err) {
+        return err
+    }
+}
 
 module.exports = {
-    createAnnonce, getAnnonceId, canCreateAnnonce, getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, modifyAnnonce, deleteAnnonce
+    createAnnonce, getAnnonceId, canCreateAnnonce, getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, modifyAnnonce, deleteAnnonce, getAllAnnonce,
+    valideAnnonce, hideAnnonce
 }

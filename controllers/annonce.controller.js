@@ -248,7 +248,7 @@ const getAnnonceFromSearch = async (req, res, next) => {
     }else {
         request += " AND state != -1"
     }
-    request += " ORDER BY id"
+    request += "AND state = 1 ORDER BY id"
     console.log(request)
 
     try {
@@ -305,13 +305,41 @@ const getImages = (req, res, next) => {
 const deleteAnnonce = async (req, res, next) => {
     const id = req.query.id
     try {
-        annonceModel.deleteAnnonce(id)
+        await annonceModel.deleteAnnonce(id)
         return res.status(200).json({message: "L'annonce à bien été supprimé !"})
+    }catch(err){
+        next(err)
+    }
+}
+const getAllAnnonce = async (req, res, next) => {
+    try {
+        const response = await annonceModel.getAllAnnonce()
+        return res.status(200).json({response})
+    }catch(err){
+        next(err)
+    }
+}
+
+const valideAnnonce = async( req, res, next) => {
+    const id = req.body.id
+    try {
+        await annonceModel.valideAnnonce(id)
+        return res.status(200).json({message: "L'annonce a été validé."})
+    }catch(err){
+        next(err)
+    }
+}
+const hideAnnonce = async( req, res, next) => {
+    const id = req.body.id
+    try {
+        await annonceModel.hideAnnonce(id)
+        return res.status(200).json({message: "L'annonce a été caché."})
     }catch(err){
         next(err)
     }
 }
 
 module.exports = {
-    createAnnonce,getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, getImages, modifyAnnonce, deleteAnnonce
+    createAnnonce,getAnnonceFromSearch, getAnnonceById, getAnnonceFromIdUser, getImages, modifyAnnonce, deleteAnnonce, getAllAnnonce,
+    valideAnnonce, hideAnnonce,
 };

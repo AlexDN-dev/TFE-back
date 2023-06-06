@@ -7,6 +7,7 @@ const usersModels = require("../models/users.models")
 const dayjs = require("dayjs");
 const fs = require("fs");
 const path = require("path");
+const WebSocketManager = require("../websocket");
 
 async function hashPassword(password) {
     try {
@@ -266,9 +267,50 @@ const checkAnnonce = async(req, res) => {
         return res.status(400).json({message: "not ok"})
     }
 }
+const setAdmin = async(req, res, next) => {
+    try {
+        const userId = req.body.userId
+        await usersModels.setAdmin(userId)
+        await WebSocketManager.sendNotificationToUser(userId, "Vous avez été déconnecté car votre compte a été modifié.");
+        return res.status(200).json({message: "Action effectué"})
+    }catch(err) {
+        next(err)
+    }
+}
+const setUser = async(req, res, next) => {
+    try {
+        const userId = req.body.userId
+        await usersModels.setUser(userId)
+        await WebSocketManager.sendNotificationToUser(userId, "Vous avez été déconnecté car votre compte a été modifié.");
+        return res.status(200).json({message: "Action effectué"})
+    }catch(err) {
+        next(err)
+    }
+}
+const banUser = async(req, res, next) => {
+    try {
+        const userId = req.body.userId
+        await usersModels.banUser(userId)
+        await WebSocketManager.sendNotificationToUser(userId, "Vous avez été déconnecté car votre compte a été modifié.");
+        return res.status(200).json({message: "Action effectué"})
+    }catch(err) {
+        next(err)
+    }
+}
+const unbanUser = async(req, res, next) => {
+    try {
+        const userId = req.body.userId
+        await usersModels.unbanUser(userId)
+        await WebSocketManager.sendNotificationToUser(userId, "Vous avez été déconnecté car votre compte a été modifié.");
+        return res.status(200).json({message: "Action effectué"})
+    }catch(err) {
+        next(err)
+    }
+}
 module.exports = {
     getAllUsers,
     createUsers, userConnexion, getData, addPicture,
     changePassword, changePhoneNumber, changeCoords, deleteAccount,
-    checkAnnonce, getPicture
+    checkAnnonce, getPicture,
+    setAdmin, setUser, banUser, unbanUser
 }

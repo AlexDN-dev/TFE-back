@@ -23,5 +23,11 @@ router.post('/', annonceController.getAnnonceById)
 router.post('/getAnnonce', annonceController.getAnnonceFromIdUser)
 router.get('/getImages', annonceController.getImages)
 router.get('/deleteAnnonce', annonceController.deleteAnnonce)
+router.get('/getAllAnnonce', annonceController.getAllAnnonce)
+
+/*ADMIN Route*/
+router.post('/valideAnnonce', annonceController.valideAnnonce)
+router.post('/hideAnnonce', annonceController.hideAnnonce)
+router.post('/deleteAnnonce', annonceController.deleteAnnonce)
 
 module.exports = router;

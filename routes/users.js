@@ -23,4 +23,10 @@ router.post('/changePhoneNumber', usersController.changePhoneNumber);
 router.post('/changeCoords', usersController.changeCoords);
 router.post('/deleteAccount', usersController.deleteAccount);
 
+/*Admin route*/
+router.post('/setAdmin', usersController.setAdmin)
+router.post('/setUser', usersController.setUser)
+router.post('/banUser', usersController.banUser)
+router.post('/unbanUser', usersController.unbanUser)
+
 module.exports = router;
