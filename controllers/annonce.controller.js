@@ -272,8 +272,10 @@ const getAnnonceById = async (req, res, next) => {
 
 const getAnnonceFromIdUser = async (req,res, next) => {
     const idUser = req.body.userId
+    const visitor = req.body.idVisitor
     try {
-        const response = await annonceModel.getAnnonceFromIdUser(idUser)
+        const response = await annonceModel.getAnnonceFromIdUser(idUser, visitor)
+        console.log(response)
         return res.status(200).json(response)
     }catch(err) {
         return next(err)

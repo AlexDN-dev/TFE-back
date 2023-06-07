@@ -38,13 +38,19 @@ const getAllTickets = async () => {
         return err
     }
 }
+const getAllOpenTickets = async () => {
+    try {
+        return await pool.query('SELECT * FROM ticket WHERE "isClose" = 0')
+    }catch(err){
+        return err
+    }
+}
 
 const sendMessage = async (sender, message, idTicket) => {
     try {
         const currentDateTime = new Date();
         const gmtPlus2DateTime = new Date(currentDateTime.getTime() + (2 * 60 * 60 * 1000));
         await pool.query('INSERT INTO message (sender, message, date, id_ticket) VALUES ($1, $2, $3, $4)', [sender, message, gmtPlus2DateTime, idTicket]);
-        console.log("test")
     }catch(err){
         console.log(err)
         return err
@@ -76,5 +82,5 @@ const reOpenTicket = async (id) => {
 
 
 module.exports = {
-    createTicket, getTickets, getTicket, getAllTickets, sendMessage, getMessage, deleteTicket, reOpenTicket
+    createTicket, getTickets, getTicket, getAllTickets, sendMessage, getMessage, deleteTicket, reOpenTicket, getAllOpenTickets
 };

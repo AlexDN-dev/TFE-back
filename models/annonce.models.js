@@ -55,13 +55,18 @@ const getAnnonceById = async (id) => {
     }
 }
 
-const getAnnonceFromIdUser = async (id) => {
+const getAnnonceFromIdUser = async (id, visitor) => {
     try {
-        const result = await pool.query('SELECT * FROM annonce WHERE id_owner = $1 AND state != -1 ORDER BY id', [id]);
+        let result
+        if(visitor !== id){
+            result = await pool.query('SELECT * FROM annonce WHERE id_owner = $1 AND state != -1 AND state != 0 ORDER BY id', [id]);
+        }else {
+            result = await pool.query('SELECT * FROM annonce WHERE id_owner = $1 AND state != -1 ORDER BY id', [id]);
+        }
         if (result.rows.length > 0) {
             return result.rows;
         } else {
-            throw new Error('Aucune annonce trouvée pour cet utilisateur');
+            return "l'utilisateur n'a pas d'annonce."
         }
     } catch (err) {
         console.error('Erreur lors de la récupération des annonces :', err);
