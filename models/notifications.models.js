@@ -1,13 +1,12 @@
 const { Pool } = require("pg");
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres',
-    password: 'ksZZ47',
-    port: 5432,
-});
-
+    user: process.env.POSGRES_USER,
+    host: process.env.POSGRES_HOST,
+    database: process.env.POSGRES_DATABASE,
+    password: process.env.POSGRES_PASSWORD,
+    port: process.env.POSGRES_PORT,
+})
 const getNotification = async (userId) => {
     try {
         return pool.query('SELECT * FROM notification WHERE receiver = $1 AND delete = 0 ORDER BY date DESC', [userId])

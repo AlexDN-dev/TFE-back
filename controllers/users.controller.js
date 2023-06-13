@@ -1,7 +1,6 @@
 const argon2 = require('argon2');
 const jwt = require("jsonwebtoken")
 const multer = require('multer');
-const ftp = require("basic-ftp");
 
 const usersModels = require("../models/users.models")
 const dayjs = require("dayjs");
@@ -307,10 +306,50 @@ const unbanUser = async(req, res, next) => {
         next(err)
     }
 }
+
+const getScore = async (req, res, next) => {
+    try {
+        const idUser = req.query.id
+        const sender = req.query.sender
+        let score = await usersModels.getScore(idUser)
+        const alreadyVote = await usersModels.alreadyVote(sender, idUser)
+        let total = 0;
+        score = score.rows
+        for (let i = 0; i < score.length; i++) {
+            total += score[i].value;
+        }
+        const moyenne = (total / score.length) * 100
+
+        res.status(200).json({moyenne: moyenne, nombre: score.length, alreadyVote: alreadyVote})
+    }catch(err){
+        next(err)
+    }
+}
+const positiveVote = async (req, res, next) => {
+    try {
+        const sender = req.body.sender
+        const receiver = req.body.receiver
+        await usersModels.positiveVote(sender, receiver)
+        res.status(200).json({message: "Vous avez donné un avis positif !"})
+    }catch(err){
+        next(err)
+    }
+}
+const negativeVote = async (req, res, next) => {
+    try {
+        const sender = req.body.sender
+        const receiver = req.body.receiver
+        await usersModels.negativeVote(sender, receiver)
+        res.status(200).json({message: "Vous avez donné un avis négatif !"})
+    }catch(err){
+        next(err)
+    }
+}
 module.exports = {
     getAllUsers,
     createUsers, userConnexion, getData, addPicture,
     changePassword, changePhoneNumber, changeCoords, deleteAccount,
     checkAnnonce, getPicture,
-    setAdmin, setUser, banUser, unbanUser
+    setAdmin, setUser, banUser, unbanUser,
+    getScore, positiveVote, negativeVote
 }

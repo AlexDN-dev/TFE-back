@@ -8,10 +8,8 @@ class WebSocketManager {
         const wss = new WebSocket.Server({ server });
 
         wss.on('connection', (socket) => {
-            console.log('Nouvelle connexion WebSocket');
 
             socket.on('message', async (message) => {
-                console.log('Message reçu du client:', message);
 
                 try {
                     const data = JSON.parse(message);
@@ -24,14 +22,12 @@ class WebSocketManager {
             });
 
             socket.on('close', () => {
-                console.log("userConnections avant supp (déco) : " + WebSocketManager.userConnections.size)
                 // Gérer la suppression de l'association utilisateur-connexion lorsque la connexion est fermée
                 WebSocketManager.userConnections.forEach((value, key) => {
                     if (value === socket) {
                         WebSocketManager.userConnections.delete(key);
                     }
                 });
-                console.log("userConnections après supp (déco) : " + WebSocketManager.userConnections.size)
             });
         });
     }

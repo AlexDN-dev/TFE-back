@@ -1,11 +1,11 @@
 const { Pool } = require("pg")
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres',
-    password: 'ksZZ47',
-    port: 5432,
+    user: process.env.POSGRES_USER,
+    host: process.env.POSGRES_HOST,
+    database: process.env.POSGRES_DATABASE,
+    password: process.env.POSGRES_PASSWORD,
+    port: process.env.POSGRES_PORT,
 })
 
 const getAllUsers = () => {
@@ -88,7 +88,21 @@ const banUser = async (id) => {
 const unbanUser = async (id) => {
     await pool.query('UPDATE users SET "profilLevel" = 0 WHERE id = $1', [id])
 }
+const getScore = async (id) => {
+    return await pool.query('SELECT value FROM "like" WHERE receiver = $1', [id])
+}
+const alreadyVote = async (sender, receiver) => {
+    return await pool.query('SELECT value FROM "like" WHERE sender = $1 AND receiver = $2', [sender, receiver])
+}
+const positiveVote = async (sender, receiver) => {
+    await pool.query('DELETE FROM "like" WHERE sender = $1 AND receiver = $2', [sender, receiver])
+    await pool.query('INSERT INTO "like" (sender, receiver, value) VALUES ($1,$2,$3)', [sender, receiver, 1])
+}
+const negativeVote = async (sender, receiver) => {
+    await pool.query('DELETE FROM "like" WHERE sender = $1 AND receiver = $2', [sender, receiver])
+    await pool.query('INSERT INTO "like" (sender, receiver, value) VALUES ($1,$2,$3)', [sender, receiver, 0])
+}
 module.exports = {
     getAllUsers, getOneUserByMail, createUser, hasAlreadyAnAccount, getUserById, changePassword, changePhoneNumber, changeCoords, deleteAccount, getProfileLevel, getPrimaryDataUserById, checkAnnonce,
-    setAdmin, setUser, banUser, unbanUser
+    setAdmin, setUser, banUser, unbanUser, getScore,alreadyVote, positiveVote, negativeVote
 }

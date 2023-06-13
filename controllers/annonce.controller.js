@@ -161,7 +161,6 @@ const getAnnonceFromSearch = async (req, res, next) => {
     let request = "SELECT * FROM annonce"
     let value = []
     let compteur = 1
-    console.log(queryParams)
     if("marque" in queryParams){
         if(compteur === 1){
             request += " WHERE marque = $" + compteur
@@ -249,7 +248,6 @@ const getAnnonceFromSearch = async (req, res, next) => {
         request += " AND state != -1"
     }
     request += "AND state = 1 ORDER BY id"
-    console.log(request)
 
     try {
         const response = await annonceModel.getAnnonceFromSearch(request, value)
@@ -275,7 +273,6 @@ const getAnnonceFromIdUser = async (req,res, next) => {
     const visitor = req.body.idVisitor
     try {
         const response = await annonceModel.getAnnonceFromIdUser(idUser, visitor)
-        console.log(response)
         return res.status(200).json(response)
     }catch(err) {
         return next(err)

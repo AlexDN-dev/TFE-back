@@ -23,6 +23,11 @@ router.post('/changePhoneNumber', usersController.changePhoneNumber);
 router.post('/changeCoords', usersController.changeCoords);
 router.post('/deleteAccount', usersController.deleteAccount);
 
+/* LIKE SYSTEM */
+router.get('/getScore', usersController.getScore)
+router.post('/positiveVote', usersController.positiveVote)
+router.post('/negativeVote', usersController.negativeVote)
+
 /*Admin route*/
 router.post('/setAdmin', usersController.setAdmin)
 router.post('/setUser', usersController.setUser)
